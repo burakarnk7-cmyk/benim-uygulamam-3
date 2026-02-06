@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Burak Arınık">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0ea5e9">
+    <meta name="background-color" content="#0f172a">
+    <meta name="description" content="Burak Arınık Pres Hesap Makinesi">
+
+    <!-- Favicon ve App Ikonları -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icon-120x120.png">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <title>Burak Arınık - Pres Hesaplayıcı</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
+            --primary-color: #0ea5e9;
+            --secondary-color: #10b981;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.8);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .calculator-container {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+            background: white;
+        }
+
+        .header-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .input-group {
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-wrapper:focus-within {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(14, 165, 233, 0.4);
+            transform: translateX(4px);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .input-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 600;
+            outline: none;
+            font-family: inherit;
+            padding: 0;
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .input-field::-webkit-outer-spin-button,
+        .input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .input-field[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .result-section {
+            margin: 24px 0;
+        }
+
+        .result-box {
+            background: var(--primary-gradient);
+            border-radius: 20px;
+            padding: 28px 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .result-box.pulse::before {
+            transform: translateX(100%);
+        }
+
+        .result-label {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            color: #000;
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .result-unit {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-clear:hover, .btn-clear:active {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .btn-calculate {
+            background: #fff;
+            color: #0f172a;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-calculate:hover, .btn-calculate:active {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+        }
+
+        .formula-info {
+            margin-top: 24px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .formula-info h3 {
+            color: #0ea5e9;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .formula-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .formula {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            color: #fff;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            letter-spacing: -0.3px;
+        }
+
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary-gradient);
+            color: #000;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .install-prompt.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+            }
+        }
+
+        @media (max-width: 380px) {
+            .calculator-container {
+                padding: 24px 20px;
+            }
+            .result-value {
+                font-size: 2.8rem;
+            }
+            .input-field {
+                font-size: 1.4rem;
+            }
+            .header-icon {
+                width: 80px;
+                height: 80px;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-height: 600px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+            }
+            .calculator-container {
+                max-width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .header {
+                grid-column: 1 / -1;
+                margin-bottom: 10px;
+            }
+            .header-icon {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 8px;
+            }
+            .input-group {
+                margin-bottom: 0;
+            }
+            .result-section {
+                margin: 0;
+            }
+            .controls {
+                grid-column: 1 / -1;
+                margin-top: 10px;
+            }
+            .formula-info {
+                grid-column: 1 / -1;
+                margin-top: 10px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .calculator-container {
+            animation: fadeIn 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <div class="header-icon">
+                <img src="icon-180x180.png" alt="BA Logo">
+            </div>
+            <h1>Burak Arınık</h1>
+            <p>Pres Hesaplayıcı</p>
+        </div>
+
+        <div class="input-group">
+            <div class="input-wrapper">
+                <label class="input-label">Tam Çap (mm)</label>
+                <input type="number" class="input-field" id="tamCap" placeholder="0.00" step="0.01" value="4.20" inputmode="decimal">
+            </div>
+
+            <div class="input-wrapper">
+                <label class="input-label">Merkez Ölçüsü (mm)</label>
+                <input type="number" class="input-field" id="merkezOlcusu" placeholder="0.00" step="0.01" value="19" inputmode="decimal">
+            </div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-box" id="resultBox">
+                <div class="result-label">Sonuç</div>
+                <div class="result-value">
+                    <span id="sonuc">16.90</span><span class="result-unit">mm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-clear" onclick="clearInputs()" type="button">Temizle</button>
+            <button class="btn btn-calculate" onclick="calculate()" type="button">Hesapla</button>
+        </div>
+
+        <div class="formula-info">
+            <h3>📐 Formül</h3>
+            <p>Çift eksantrik preslerde net çalışma mesafesi:</p>
+            <div class="formula">
+                Sonuç = Merkez Ölçüsü − (Tam Çap ÷ 2)
+            </div>
+        </div>
+    </div>
+
+    <div class="install-prompt" id="installPrompt" onclick="installApp()">
+        📲 Ana Ekrana Ekle
+    </div>
+
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            setTimeout(() => {
+                document.getElementById('installPrompt').classList.add('show');
+            }, 2000);
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('installPrompt').classList.remove('show');
+                    deferredPrompt = null;
+                });
+            } else {
+                alert('iPhone/iPad: Safari\'de paylaş butonuna basıp "Ana Ekrana Ekle" seçin');
+            }
+        }
+
+        const tamCapInput = document.getElementById('tamCap');
+        const merkezInput = document.getElementById('merkezOlcusu');
+
+        tamCapInput.addEventListener('input', calculate);
+        merkezInput.addEventListener('input', calculate);
+
+        tamCapInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') merkezInput.focus();
+        });
+        merkezInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculate();
+        });
+
+        function calculate() {
+            const tamCap = parseFloat(tamCapInput.value);
+            const merkezOlcusu = parseFloat(merkezInput.value);
+
+            if (isNaN(tamCap) || isNaN(merkezOlcusu)) {
+                document.getElementById('sonuc').textContent = '---';
+                return;
+            }
+
+            const sonuc = merkezOlcusu - (tamCap / 2);
+
+            const sonucElement = document.getElementById('sonuc');
+            sonucElement.textContent = sonuc.toFixed(2);
+
+            const resultBox = document.getElementById('resultBox');
+            resultBox.classList.remove('pulse');
+            void resultBox.offsetWidth;
+            resultBox.classList.add('pulse');
+        }
+
+        function clearInputs() {
+            tamCapInput.value = '';
+            merkezInput.value = '';
+            document.getElementById('sonuc').textContent = '0.00';
+            tamCapInput.focus();
+        }
+
+        calculate();
+
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.getElementById('installPrompt').style.display = 'none';
+        }
+
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('dblclick', (e) => e.preventDefault());
+    </script>
+</body>
+</html>
